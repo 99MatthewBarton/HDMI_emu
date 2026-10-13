@@ -1,0 +1,22 @@
+# Boots the Pi straight into the test pattern display on tty1.
+# Installed by deploy/install.sh --service (@USER@/@ARGS@ are substituted).
+[Unit]
+Description=HDMI display tester
+After=systemd-user-sessions.service
+Conflicts=getty@tty1.service
+
+[Service]
+User=@USER@
+SupplementaryGroups=video input gpio
+WorkingDirectory=/home/@USER@
+Environment=SDL_VIDEODRIVER=kmsdrm
+ExecStart=/usr/local/bin/hdmi-tester run --report /home/@USER@/defects.json @ARGS@
+StandardInput=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
